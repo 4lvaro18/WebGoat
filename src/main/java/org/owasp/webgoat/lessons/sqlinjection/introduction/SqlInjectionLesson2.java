@@ -61,10 +61,11 @@ public class SqlInjectionLesson2 extends AssignmentEndpoint {
   }
 
   protected AttackResult injectableQuery(String query) {
-    try (var connection = dataSource.getConnection()) {
-      String sql = "SELECT * FROM employees WHERE department = ?"; 
-      PreparedStatement statement = connection.prepareStatement(sql, TYPE_SCROLL_INSENSITIVE, CONCUR_READ_ONLY);
-      statement.setString(1, query); 
+    String sql = "SELECT * FROM employees WHERE department = ?";
+    try (var connection = dataSource.getConnection();
+         PreparedStatement statement = connection.prepareStatement(sql, TYPE_SCROLL_INSENSITIVE, CONCUR_READ_ONLY)) {
+      
+      statement.setString(1, query);
       ResultSet results = statement.executeQuery();  
       StringBuilder output = new StringBuilder();
 

@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import java.sql.PreparedStatement;
 
 @RestController
 @AssignmentHints(
@@ -61,8 +62,10 @@ public class SqlInjectionLesson2 extends AssignmentEndpoint {
 
   protected AttackResult injectableQuery(String query) {
     try (var connection = dataSource.getConnection()) {
-      Statement statement = connection.createStatement(TYPE_SCROLL_INSENSITIVE, CONCUR_READ_ONLY);
-      ResultSet results = statement.executeQuery(query);
+      String sql = "SELECT * FROM employees WHERE department = ?"; 
+      PreparedStatement statement = connection.prepareStatement(sql, TYPE_SCROLL_INSENSITIVE, CONCUR_READ_ONLY);
+      statement.setString(1, query); 
+      ResultSet results = statement.executeQuery();  
       StringBuilder output = new StringBuilder();
 
       results.first();
